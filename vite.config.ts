@@ -3,7 +3,7 @@ import { data } from "./src/lib/data";
 import { renderArticle } from "./src/sections/article";
 
 export default defineConfig({
-  base: process.env.VITE_BASE_PATH ?? "/shinkansen-short-distance/",
+  base: process.env.VITE_BASE_PATH ?? "/two-stop-tax/",
   plugins: [
     {
       name: "inline-rendered-article",
