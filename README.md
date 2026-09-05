@@ -23,7 +23,7 @@ npm run build
 2. ローカルで remote を追加する。
 
 ```bash
-git remote add origin git@github.com:<user>/shinkansen-short-distance.git
+git remote add origin https://github.com/project-j-k/shinkansen-short-distance.git
 git branch -M main
 git push -u origin main
 ```
