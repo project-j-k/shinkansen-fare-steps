@@ -3,6 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Pages の設定後などに手動で再実行できるようにする
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -22,14 +24,11 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # vite 8 が要求する Node は ^20.19.0 || >=22.12.0
+          node-version: 22
           cache: npm
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          # Pages が未設定のリポジトリでも、初回実行時に
-          # Build and deployment source を GitHub Actions に切り替える
-          enablement: true
       - name: Install
         run: npm ci
       - name: Build

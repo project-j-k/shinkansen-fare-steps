@@ -28,8 +28,8 @@ git branch -M main
 git push -u origin main
 ```
 
-3. Pages の Source は初回のワークフロー実行時に自動で GitHub Actions に設定される（`configure-pages` の `enablement`）。手動で切り替える必要はない。
-4. `main` への push で `.github/workflows/deploy.yml` が `npm ci && npm run build` を実行し、GitHub Pages に公開します。
+3. GitHub の Settings > Pages で **Source を GitHub Actions** にする。この初回設定は Web UI（またはリポジトリ管理権限を持つトークン）でしか行えず、ワークフロー内の `GITHUB_TOKEN` では有効化できないため、手動での操作が必要です。
+4. `main` への push で `.github/workflows/deploy.yml` が `npm ci && npm run build` を実行し、GitHub Pages に公開します。Pages の設定後に再実行したい場合は、Actions タブから `workflow_dispatch` で手動実行できます。
 
 ## base パス
 
