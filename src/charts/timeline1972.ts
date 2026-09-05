@@ -32,7 +32,7 @@ export const timeline1972Chart = (stations: Station[], rule: TokuteiRule): strin
     <text class="note-label" x="${mishima - 46}" y="54">三島は基準年より前に開業</text>
     ${row(230, "現在", true)}
     <path class="bracket strong" d="${handPath([[mishima, 262], [mishima, 276], [shizuoka, 276], [shizuoka, 262]], "mishima-shizuoka")}" />
-    <text class="note-label" x="${mishima + 20}" y="302">後から新駅が挟まった区間は名指しで救済</text>
+    <text class="note-label" x="${mishima + 20}" y="302">後から新駅が挟まった区間は名指しで割引</text>
   `;
   return svg(w, h, body, `${year(rule.basisYear)}年と現在の小田原から静岡までの路線図比較`);
 };

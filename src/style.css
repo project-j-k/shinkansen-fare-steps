@@ -368,29 +368,6 @@ svg {
   font-size: 13px;
 }
 
-.point circle {
-  fill: var(--blue);
-  stroke: var(--paper);
-  stroke-width: 1.5;
-}
-
-.point path,
-.tokutei-sample {
-  stroke: var(--green);
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-
-.hero-ring {
-  fill: none;
-  stroke: var(--red);
-  stroke-width: 3;
-}
-
-.normal-dot {
-  fill: var(--blue);
-}
-
 .annotation-line,
 .bracket {
   fill: none;

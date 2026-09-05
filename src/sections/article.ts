@@ -2,7 +2,6 @@ import type { Pair, TokaidoData } from "../types";
 import { comparisonBarChart } from "../charts/comparisonBar";
 import { fareStepChart } from "../charts/fareStep";
 import { routeChart } from "../charts/route";
-import { scatterChart } from "../charts/scatter";
 import { timeline1972Chart } from "../charts/timeline1972";
 import { escapeHtml, km, perKm, ratio, sectionName, yen, year } from "../lib/format";
 import { findPair } from "../lib/data";
@@ -13,7 +12,7 @@ const stat = (label: string, value: string, tone = ""): string => `
     <strong>${value}</strong>
   </div>`;
 
-const memoQuote = (label: string, text: string): string => `
+const keyPoint = (label: string, text: string): string => `
   <figure class="memo-quote">
     <figcaption>${label}</figcaption>
     <blockquote>${escapeHtml(text)}</blockquote>
@@ -46,7 +45,7 @@ const renderChecker = (data: TokaidoData): string => {
   return `
     <section id="checker" class="section checker-section">
       <p class="section-number">7</p>
-      <h2><span>自分の区間を調べる</span></h2>
+      <h2><span>乗る区間を調べてみる</span></h2>
       <p class="body-text">ここまでの話は、特定の区間だけの珍事件に見えるかもしれません。そこで、出発駅と到着駅を選ぶだけで、その区間が特定特急券の側にいるのか、通常の階段料金の側にいるのかを確認できるようにしました。</p>
       <p class="body-text">表示するのは、乗車券、自由席特急料金、指定席特急料金、実際に払う合計額、そして自由席特急料金を営業キロで割った単価です。同じ駅を選んだ場合は、移動区間ではないので料金を出さず、別の駅を選ぶよう案内します。</p>
       <div class="checker">
@@ -129,7 +128,7 @@ export const renderArticle = (data: TokaidoData): string => {
 
       <section class="section">
         <p class="section-number">2</p>
-        <h2><span>特急料金は距離に比例していません</span></h2>
+        <h2><span>特急料金は、乗った距離だけでは決まりません</span></h2>
         <p class="body-text">新幹線に乗るときの支払いは、大きく分けると乗車券と特急券です。乗車券は普通列車に乗るための基本料金で、営業キロ、つまり運賃計算に使う鉄道上の距離に応じて増えていきます。</p>
         <p class="body-text">一方で、特急料金は営業キロに応じた階段で決まります。その最初の段である ${data.fareTiers[0].label} が広く、指定席なら ${yen(data.fareTiers[0].reservedLtd)}、自由席なら ${yen(data.fareTiers[0].freeLtd)} が一律でかかります。</p>
         <p class="body-text">つまり、この段の中では短く乗っても長く乗っても特急料金は同じです。乗車券は少しずつ増えるのに、特急料金だけが平らな踊り場を持っているため、乗る距離が短いほど ${perKm(hero.yenPerKmFree)} のように負担が跳ね上がります。</p>
@@ -138,8 +137,8 @@ export const renderArticle = (data: TokaidoData): string => {
 
       <section class="section">
         <p class="section-number">3</p>
-        <h2><span>短距離には救済があります</span></h2>
-        <p class="body-text">JRも短距離の割高感を放置しているわけではありません。隣接する駅どうしの区間には、特定特急券という割安な自由席用の特急券があります。指定席ではなく、自由席に乗るときの短距離向け救済です。</p>
+        <h2><span>短い区間には割引があります</span></h2>
+        <p class="body-text">JRも短距離の割高感を放置しているわけではありません。隣接する駅どうしの区間には、特定特急券という割安な自由席用の特急券があります。指定席ではなく、自由席に乗るときの短距離向け割引です。</p>
         <p class="body-text">この特定特急券は、通常の ${data.fareTiers[0].label} の階段とは別枠です。営業キロ ${km(data.tokuteiRule.thresholdKm)} 以下なら ${yen(data.tokuteiRule.amounts.upTo50km)}、${km(data.tokuteiRule.thresholdKm)} を超えるなら ${yen(data.tokuteiRule.amounts.over50km)} になります。熱海〜三島は ${yen(oneStop.freeLtd)}、小田原〜熱海も ${yen(oneStopWest.freeLtd)} です。</p>
         <div class="note-row">
           <div class="sticky small">隣接駅間なら ${km(data.tokuteiRule.thresholdKm)} 以下 ${yen(data.tokuteiRule.amounts.upTo50km)} / 超 ${yen(data.tokuteiRule.amounts.over50km)}</div>
@@ -154,7 +153,7 @@ export const renderArticle = (data: TokaidoData): string => {
 
       <section class="section">
         <p class="section-number">4</p>
-        <h2><span>短いほうが高い、という逆転</span></h2>
+        <h2><span>短いほうが高くなる区間があります</span></h2>
         <p class="body-text">三島から静岡までは ${km(cheaper.km)} ありますが、自由席特急料金は ${yen(cheaper.freeLtd)} です。小田原から三島までは ${km(hero.km)} しかないのに、自由席特急料金は ${yen(hero.freeLtd)} です。</p>
         <p class="body-text">短いほうが高い、という逆転が起きています。差額は ${yen(shortPremium)} です。これは割引商品やキャンペーンの話ではなく、通常の自由席特急料金どうしの比較です。</p>
         <p class="body-text">新横浜〜小田原も ${km(cheaper2.km)} で ${yen(cheaper2.freeLtd)} です。小田原〜三島より長いのに安い区間が複数あることで、距離と値段の対応が壊れて見える理由がはっきりします。</p>
@@ -163,14 +162,14 @@ export const renderArticle = (data: TokaidoData): string => {
 
       <section class="section">
         <p class="section-number">5</p>
-        <h2><span>${year(data.tokuteiRule.basisYear)}年の路線図が、いまの料金を決めています</span></h2>
+        <h2><span>${year(data.tokuteiRule.basisYear)}年の駅の並びが、いまの料金を決めています</span></h2>
         <p class="body-text">特定特急券の「隣接駅間」は、現在の駅並びだけでは決まりません。東海道・山陽新幹線では、新大阪〜岡山が開業した ${year(data.tokuteiRule.basisYear)}年の駅の並びが、判断の大きな基準になっています。</p>
-        <p class="body-text">その後に新駅ができた区間は、規則に区間名を書いて救済を続けています。代表例が ${sectionName(cheaper)} で、あとから新富士が入って現在は隣どうしではなくなっても、自由席特急料金は ${yen(cheaper.freeLtd)} のままです。</p>
-        ${memoQuote("規則メモ：特定特急券の基準", data.tokuteiRule.basisNote)}
+        <p class="body-text">その後に新駅ができた区間は、規則に区間名を書いて割引を続けています。代表例が ${sectionName(cheaper)} で、あとから新富士が入って現在は隣どうしではなくなっても、自由席特急料金は ${yen(cheaper.freeLtd)} のままです。</p>
+        ${keyPoint("特定特急券の基準", data.tokuteiRule.basisNote)}
         ${timeline1972Chart(data.stations, data.tokuteiRule)}
-        <p class="body-text">一方で、三島駅の開業は ${year(mishimaStation.opened)}年です。基準になる ${year(data.tokuteiRule.basisYear)}年には、すでに小田原・熱海・三島の順で駅が並んでいました。小田原と三島は隣接だったことがないため、「あとから駅が挟まった区間」として救済される入口に立てませんでした。</p>
+        <p class="body-text">一方で、三島駅の開業は ${year(mishimaStation.opened)}年です。基準になる ${year(data.tokuteiRule.basisYear)}年には、すでに小田原・熱海・三島の順で駅が並んでいました。小田原と三島は隣接だったことがないため、「あとから駅が挟まった区間」として割引される入口に立てませんでした。</p>
         <p class="body-text">もし三島が新富士たちと同じ ${year(newFujiStation.opened)}年開業だったなら、小田原〜三島は今も特定特急券の対象で、${km(data.tokuteiRule.thresholdKm)} 以下の ${yen(data.tokuteiRule.amounts.upTo50km)} だったはずです。半世紀前の駅の並びが、いまの短距離移動の負担感につながっています。</p>
-        ${memoQuote("規則メモ：小田原〜三島が外れる理由", data.tokuteiRule.whyOdawaraMishimaExcluded)}
+        ${keyPoint("小田原〜三島が外れた理由", data.tokuteiRule.whyOdawaraMishimaExcluded)}
         <ul class="lined-list">
           ${data.tokuteiRule.enumeratedSections
             .map(([from, to]) => `<li><strong>${from}〜${to}</strong>：${data.tokuteiRule.enumeratedReason[`${from}-${to}`]}</li>`)
@@ -180,12 +179,11 @@ export const renderArticle = (data: TokaidoData): string => {
 
       <section class="section">
         <p class="section-number">6</p>
-        <h2><span>全区間を並べると危険地帯が見えます</span></h2>
-        <p class="body-text">散布図は、横軸が営業キロ、縦軸が自由席特急料金の円/kmです。左上にある点ほど、短い距離なのに単価が高い区間です。特定特急券が効く区間と、効かない区間は形と色を変えています。</p>
-        <p class="body-text">路線図では、駅の並び、開業時期、特定特急券が効く区間を同時に見られるようにしました。後発駅が挟まっても救済が続く区間と、最初から隣どうしではなかった小田原〜三島の違いが見えてきます。</p>
-        ${scatterChart(data.pairs, hero)}
+        <h2><span>東海道新幹線の全区間を比べてみる</span></h2>
+        <p class="body-text">路線図では、東海道新幹線の駅の並び、開業時期、特定特急券が効く区間をまとめて見られるようにしました。後発駅が間に入っても割引が続く区間と、最初から隣どうしではなかった小田原〜三島の違いが見えてきます。</p>
+        <p class="body-text">表では、自由席特急料金を営業キロで割った単価が高い順に並べています。全区間の表と、特定特急券が効かない区間だけの表を分けることで、短い距離で通常料金になる区間を見つけやすくしています。</p>
         ${routeChart(data.stations, data.pairs, data.tokuteiRule)}
-        <h3 class="subhead">自由席 円/km ワースト（全区間）</h3>
+        <h3 class="subhead">自由席 円/km が高い区間（全区間）</h3>
         <p class="body-text">全区間で見ると、隣接駅間は距離が極端に短いので単価が高く出ます。これは短距離向けの特定特急券が効いていても、分母の営業キロが小さいためです。</p>
         <div class="table-wrap">
           <table>
@@ -193,7 +191,7 @@ export const renderArticle = (data: TokaidoData): string => {
             <tbody>${worst.map(fareLine).join("")}</tbody>
           </table>
         </div>
-        <h3 class="subhead">自由席 円/km ワースト（特定特急券なし）</h3>
+        <h3 class="subhead">自由席 円/km が高い区間（特定特急券なし）</h3>
         <p class="body-text">特定特急券が効かない区間だけに絞ると、短距離なのに通常の階段料金へ乗ってしまう区間が浮かびます。この表では ${sectionName(worstNoTokutei[0])} が先頭に来ます。</p>
         <div class="table-wrap">
           <table>
@@ -207,8 +205,8 @@ export const renderArticle = (data: TokaidoData): string => {
 
       <section class="section">
         <p class="section-number">8</p>
-        <h2><span>同じ罠にはまる区間</span></h2>
-        <p class="body-text">ここでいう「同じ罠」は、特定特急券が効かず、営業キロが ${data.fareTiers[0].label} の中に収まる区間です。さらに、あいだに駅があるほど「短距離なのに隣接駅扱いではない」ことが分かりやすくなります。</p>
+        <h2><span>同じことが起きている区間</span></h2>
+        <p class="body-text">ここで見るのは、特定特急券が効かず、営業キロが ${data.fareTiers[0].label} の中に収まる区間です。さらに、あいだに駅があるほど「短距離なのに隣接駅扱いではない」ことが分かりやすくなります。</p>
         <p class="body-text">一覧には、あいだの駅数も加えました。営業キロだけなら短いのに、特急料金は通常の踊り場に乗ってしまう区間です。</p>
         <div class="table-wrap">
           <table>
@@ -235,18 +233,18 @@ export const renderArticle = (data: TokaidoData): string => {
 
       <section class="section">
         <p class="section-number">9</p>
-        <h2><span>在来線は安いが、熱海で切れます</span></h2>
+        <h2><span>在来線なら安い。ただし熱海で乗り継ぎになります</span></h2>
         <p class="body-text">在来線を選ぶと、特急料金はかかりません。小田原〜三島なら、乗車券は ${yen(hero.fare)} です。新幹線の自由席に乗ると合計は ${yen(hero.freeTotal)} なので、乗車券だけの場合の ${ratio(hero.freeMultipleOfFare)} になります。</p>
         <p class="body-text">この差は、速さと乗り通しやすさに対して支払う上乗せ分です。短い距離では、その上乗せ分がかなり大きく見えます。</p>
-        ${memoQuote("規則メモ：新幹線と在来線の乗車券", data.conventionalLine.note)}
+        ${keyPoint("新幹線と在来線の乗車券", data.conventionalLine.note)}
         <div class="boundary-grid">
-          <div class="paper-block"><h3>${data.conventionalLine.boundary.station}の会社境界</h3><p>${data.conventionalLine.boundary.east}</p><p>${data.conventionalLine.boundary.west}</p>${memoQuote("抜き書き：施設上の境界", data.conventionalLine.boundary.physicalBoundary)}</div>
-          <div class="paper-block"><h3>IC と運行</h3>${memoQuote("抜き書き：ICカード", data.conventionalLine.boundary.icRule)}${memoQuote("抜き書き：実際の買い方", data.conventionalLine.boundary.practical)}${memoQuote("抜き書き：列車のつながり", data.conventionalLine.boundary.operation)}</div>
+          <div class="paper-block"><h3>${data.conventionalLine.boundary.station}の会社境界</h3><p>${data.conventionalLine.boundary.east}</p><p>${data.conventionalLine.boundary.west}</p>${keyPoint("会社の境界はどこか", data.conventionalLine.boundary.physicalBoundary)}</div>
+          <div class="paper-block"><h3>IC と運行</h3>${keyPoint("ICカードの制約", data.conventionalLine.boundary.icRule)}${keyPoint("実際の買い方", data.conventionalLine.boundary.practical)}${keyPoint("列車のつながり", data.conventionalLine.boundary.operation)}</div>
         </div>
         <p class="body-text">ただし在来線には別の手間があります。熱海はJR東日本とJR東海の境界駅で、熱海より東側はJR東日本、西側はJR東海の区間になります。定期券を除くと熱海をまたぐICカード利用ができないため、小田原〜三島を在来線で通すなら、乗る前に全区間の紙のきっぷを買う必要があります。</p>
         <p class="body-text">ICカードで熱海まで来てしまうと、熱海でいったん精算し、その先のきっぷを買い直すことになります。さらに東海道本線の大半の列車は熱海で系統が分かれるので、乗り換えも前提になります。</p>
         <p class="body-text">いっぽう東海道新幹線は全線がJR東海です。小田原〜三島は会社境界をまたがないため、このICカードや買い直しの手間がありません。新幹線は高いが継ぎ目がない、在来線は安いが熱海で切れる、という選択です。</p>
-        ${memoQuote("抜き書き：新幹線側の扱い", data.conventionalLine.boundary.shinkansenNote)}
+        ${keyPoint("新幹線側はどうか", data.conventionalLine.boundary.shinkansenNote)}
       </section>
 
       <section class="section sources">
