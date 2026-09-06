@@ -213,7 +213,7 @@ export const renderArticle = (data: TokaidoData): string => {
         <h2><span>東海道新幹線の全区間を比べてみる</span></h2>
         <p class="body-text">路線図では、東海道新幹線の駅の並び、開業時期、特定特急券が効く区間をまとめて見られるようにしました。後発駅が間に入っても割引が続く区間と、最初から隣どうしではなかった小田原〜三島の違いが見えてきます。</p>
         <p class="body-text">表では、自由席特急料金を営業キロで割った単価が高い順に並べています。全区間の表と、特定特急券が効かない区間だけの表を分けることで、短い距離で通常料金になる区間を見つけやすくしています。</p>
-        ${routeChart(data.stations, data.pairs, data.tokuteiRule)}
+        ${routeChart(data.stations, data.pairs, data.tokuteiRule, data.highlights.hero)}
         <h3 class="subhead">自由席 円/km が高い区間（全区間）</h3>
         <p class="body-text">全区間で見ると、隣接駅間は距離が極端に短いので単価が高く出ます。これは短距離向けの特定特急券が効いていても、分母の営業キロが小さいためです。</p>
         ${collapsedRowsTable(fareHeaders, worst.map(fareLine))}

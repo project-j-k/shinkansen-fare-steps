@@ -1,41 +1,55 @@
-import type { Pair, Station, TokuteiRule } from "../types";
+import type { HighlightPair, Pair, Station, TokuteiRule } from "../types";
 import { km, sectionName, year } from "../lib/format";
-import { handPath, svg } from "./svg";
+import { svg } from "./svg";
 
-export const routeChart = (stations: Station[], pairs: Pair[], rule: TokuteiRule): string => {
-  const w = 1080;
-  const h = 300;
-  const start = 56;
-  const end = w - 48;
-  const maxKm = Math.max(...stations.map((station) => station.km));
-  const x = (value: number) => start + (value / maxKm) * (end - start);
-  const tokuteiPairs = pairs.filter((pair) => pair.isTokutei && (pair.adjacentNow || pair.adjacent1972));
+export const routeChart = (stations: Station[], pairs: Pair[], rule: TokuteiRule, hero: HighlightPair): string => {
+  const w = 1500;
+  const h = 280;
+  const start = 70;
+  const end = w - 70;
+  const lineY = 144;
+  const xByStation = new Map<string, number>(
+    stations.map((station, index) => [station.name, start + (index / Math.max(stations.length - 1, 1)) * (end - start)]),
+  );
+  const x = (stationName: string): number => xByStation.get(stationName) ?? start;
+  const namedTokuteiPairs = rule.enumeratedSections
+    .map(([from, to]) => pairs.find((pair) => (pair.from === from && pair.to === to) || (pair.from === to && pair.to === from)))
+    .filter((pair): pair is Pair => Boolean(pair));
   const stationMarks = stations
-    .map((station) => {
-      const cx = x(station.km);
+    .map((station, index) => {
+      const cx = x(station.name);
+      const labelY = index % 2 === 0 ? 96 : 70;
+      const kmY = index % 4 === 0 || index === stations.length - 1 ? 178 : 0;
       const marker = station.existedIn1972
-        ? `<circle class="station old" cx="${cx}" cy="118" r="7" />`
-        : `<rect class="station new" x="${cx - 6}" y="112" width="12" height="12" />`;
-      return `${marker}<text class="station-name" x="${cx}" y="92" transform="rotate(-38 ${cx} 92)">${station.name}</text><text class="station-km" x="${cx}" y="146" text-anchor="middle">${km(station.km)}</text>`;
+        ? `<circle class="station old" cx="${cx}" cy="${lineY}" r="7" />`
+        : `<rect class="station new" x="${cx - 6}" y="${lineY - 6}" width="12" height="12" />`;
+      return `${marker}<text class="station-name" x="${cx}" y="${labelY}" text-anchor="middle">${station.name}</text>${kmY ? `<text class="station-km" x="${cx}" y="${kmY}" text-anchor="middle">${km(station.km)}</text>` : ""}`;
     })
     .join("");
-  const brackets = tokuteiPairs
-    .map((pair, index) => {
+  const bracketPath = (fromName: string, toName: string, y: number): string => {
+    const fromX = x(fromName);
+    const toX = x(toName);
+    return `M${fromX} ${y}V${y + 10}H${toX}V${y}`;
+  };
+  const tokuteiBrackets = namedTokuteiPairs
+    .map((pair) => {
       const from = stations.find((station) => station.name === pair.from);
       const to = stations.find((station) => station.name === pair.to);
       if (!from || !to) return "";
-      const y = 174 + (index % 3) * 24;
-      return `<path class="bracket" d="${handPath([[x(from.km), y], [x(from.km), y + 9], [x(to.km), y + 9], [x(to.km), y]], `${pair.from}-${pair.to}`)}"><title>${sectionName(pair)}</title></path>`;
+      return `<path class="bracket" d="${bracketPath(from.name, to.name, 204)}"><title>${sectionName(pair)}</title></path>`;
     })
     .join("");
+  const heroBracket = `<path class="annotation-line" d="${bracketPath(hero.from, hero.to, 226)}"><title>${sectionName(hero)}: 割引なし</title></path>`;
   const body = `
-    <path class="route-line" d="M${start} 118H${end}" />
+    <path class="route-line" d="M${start} ${lineY}H${end}" />
     ${stationMarks}
-    ${brackets}
-    <text class="note-label" x="${start}" y="232">下のブラケット: 特定特急券が効く区間</text>
+    ${tokuteiBrackets}
+    ${heroBracket}
     <g class="legend">
-      <circle cx="${w - 300}" cy="234" r="6" class="station old" /><text x="${w - 288}" y="239">${year(rule.basisYear)}時点で存在</text>
-      <rect x="${w - 132}" y="228" width="12" height="12" class="station new" /><text x="${w - 114}" y="239">後発駅</text>
+      <circle cx="${start}" cy="252" r="6" class="station old" /><text x="${start + 12}" y="257">${year(rule.basisYear)}時点で存在</text>
+      <rect x="${start + 180}" y="246" width="12" height="12" class="station new" /><text x="${start + 198}" y="257">後発駅</text>
+      <path class="bracket" d="M${start + 320} 246V256H${start + 370}V246" /><text x="${start + 382}" y="257">後発駅が挟まっても割引が続く区間</text>
+      <path class="annotation-line" d="M${start + 685} 246V256H${start + 735}V246" /><text x="${start + 747}" y="257">割引がない区間</text>
     </g>
   `;
   return svg(w, h, body, "東海道新幹線17駅の路線図と特定特急券区間");

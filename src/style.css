@@ -70,7 +70,7 @@ select {
 
 .hero,
 main {
-  width: min(1120px, calc(100% - 28px));
+  width: min(960px, calc(100% - 28px));
   margin: 0 auto;
 }
 
@@ -96,7 +96,7 @@ p {
 }
 
 h1 {
-  max-width: 10.2em;
+  width: 100%;
   margin-bottom: 18px;
   font-size: clamp(2.28rem, 7.4vw, 5.9rem);
   line-height: 1.02;
@@ -131,7 +131,6 @@ mark {
 }
 
 .subtitle {
-  max-width: 760px;
   margin-bottom: 12px;
   font-size: clamp(1.03rem, 2vw, 1.46rem);
   font-weight: 700;
@@ -140,6 +139,30 @@ mark {
 .hero-copy {
   width: 100%;
   min-width: 0;
+}
+
+.toc {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 0 18px;
+  border-top: 2px dashed var(--line);
+  border-bottom: 2px dashed var(--line);
+}
+
+.toc a {
+  display: flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 7px 9px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-strong) 72%, transparent);
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  text-decoration: none;
 }
 
 
@@ -157,7 +180,7 @@ mark {
 .section-number {
   position: absolute;
   top: 27px;
-  left: -4px;
+  left: -56px;
   width: 38px;
   height: 38px;
   border: 2px solid var(--red);
@@ -168,7 +191,6 @@ mark {
 }
 
 h2 {
-  margin-left: 48px;
   font-size: clamp(1.42rem, 3.4vw, 2.38rem);
   line-height: 1.28;
   letter-spacing: 0;
@@ -182,9 +204,8 @@ h2 {
 }
 
 .body-text {
-  max-width: 868px;
   font-size: 1.05rem;
-  margin-bottom: 1.05rem;
+  margin-bottom: 0.82rem;
 }
 
 .compare-grid,
@@ -192,20 +213,21 @@ h2 {
 .boundary-grid,
 .split-grid {
   display: grid;
-  gap: 24px;
+  gap: 20px;
 }
 
 .compare-grid {
-  grid-template-columns: minmax(0, 1.15fr) minmax(240px, 0.85fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: start;
 }
 
 .note-row {
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
 }
 
 .boundary-grid {
-  grid-template-columns: 0.95fr 1.05fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .split-grid {
@@ -233,7 +255,7 @@ h2 {
 }
 
 .memo-quote {
-  margin: 20px 0;
+  margin: 22px 0;
   padding: 12px 14px;
   border-left: 5px solid var(--red);
   background:
@@ -273,7 +295,7 @@ h2 {
 }
 
 .hero-note {
-  width: min(390px, 100%);
+  width: 100%;
   margin: 4px 0 0;
   font-weight: 800;
   overflow-wrap: anywhere;
@@ -487,7 +509,7 @@ th {
 
 .checker {
   display: grid;
-  grid-template-columns: 190px 190px minmax(0, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   align-items: start;
 }
@@ -580,10 +602,18 @@ select {
   margin-bottom: 10px;
 }
 
+@media (max-width: 1080px) {
+  .section-number {
+    position: static;
+    margin-bottom: 8px;
+    transform: none;
+  }
+}
+
 @media (max-width: 760px) {
   .hero,
   main {
-    width: min(100% - 18px, 1120px);
+    width: min(100% - 18px, 960px);
   }
 
   .hero,
@@ -616,16 +646,16 @@ select {
   }
 
   h2 {
-    margin-left: 42px;
     font-size: 1.34rem;
   }
 
   .section {
-    padding: 38px 0 26px;
+    padding: 28px 0 18px;
   }
 
   .section-number {
-    top: 22px;
+    width: 34px;
+    height: 34px;
   }
 
   .subtitle {
@@ -637,7 +667,17 @@ select {
     margin: 10px 0 0;
   }
 
+  .toc {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    padding: 8px 0 12px;
+  }
 
+  .toc a {
+    min-height: 30px;
+    padding: 5px 8px;
+    font-size: 0.78rem;
+  }
 
   .stat {
     width: 100%;
@@ -689,7 +729,7 @@ select {
 @media (max-width: 420px) {
   .hero,
   main {
-    width: min(100% - 20px, 1120px);
+    width: min(100% - 20px, 960px);
   }
 
   .hero {
@@ -701,7 +741,6 @@ select {
   }
 
   h2 {
-    margin-left: 40px;
     font-size: 1.22rem;
   }
 
@@ -758,7 +797,18 @@ select {
 }
 
 @media (max-width: 480px) {
+  .toc {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 6px 0 10px;
+  }
 
+  .toc a {
+    min-height: 26px;
+    padding: 4px 8px;
+    font-size: 0.76rem;
+    line-height: 1.18;
+  }
 
   .split-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
