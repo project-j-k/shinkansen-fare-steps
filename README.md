@@ -44,3 +44,11 @@ VITE_BASE_PATH=/another-repo/ npm run build
 ## データの出所
 
 表示する料金、営業キロ、円/km、特定特急券の判定、出典情報は `src/data/tokaido.json` から import しています。JR東海の旅客営業規則・別表第2号ツなど、JSON 内の `sources` と `meta` に記録された一次情報・参照情報をもとにした検証済みデータです。
+
+## OGP 画像とファビコン
+
+- `public/og.png` … SNS 共有用の画像（1200×630）。文字だけの構成で、数値は `src/data/tokaido.json` から取っている
+- `public/favicon.svg` … 方眼に赤い階段（短距離で跳ね上がる特急料金）
+- `public/apple-touch-icon.png` … favicon.svg を 180×180 で書き出したもの
+
+データを更新したら OG 画像も作り直す。手順は `scripts/make-og.py` の冒頭に書いてある。

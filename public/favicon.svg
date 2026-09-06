@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="階段状に跳ね上がる特急料金">
+  <rect width="64" height="64" fill="#fbf7ea"/>
+  <g stroke="#406f83" stroke-opacity=".22" stroke-width="2">
+    <path d="M0 16h64M0 32h64M0 48h64M16 0v64M32 0v64M48 0v64"/>
+  </g>
+  <!-- 蛍光ペンの帯 -->
+  <rect x="4" y="40" width="56" height="12" fill="#f7e36b"/>
+  <!-- 料金の階段：短い区間でいきなり跳ね上がる -->
+  <path d="M6 52 V34 H26 V22 H44 V12 H58"
+        fill="none" stroke="#b64237" stroke-width="7"
+        stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>
