@@ -54,7 +54,7 @@ body {
     repeating-linear-gradient(0deg, transparent 0 119px, var(--grid-strong) 119px 120px),
     repeating-linear-gradient(90deg, transparent 0 119px, var(--grid-strong) 119px 120px);
   color: var(--ink);
-  line-height: 1.56;
+  line-height: 1.66;
 }
 
 a {
@@ -142,33 +142,11 @@ mark {
   min-width: 0;
 }
 
-.toc {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  padding: 12px 0 18px;
-  border-top: 2px dashed var(--line);
-  border-bottom: 2px dashed var(--line);
-}
 
-.toc a {
-  display: flex;
-  align-items: center;
-  min-height: 42px;
-  padding: 7px 9px;
-  border: 1px solid var(--line);
-  background: color-mix(in srgb, var(--paper-strong) 72%, transparent);
-  color: var(--ink);
-  font-size: 0.88rem;
-  font-weight: 800;
-  line-height: 1.25;
-  text-decoration: none;
-  overflow-wrap: anywhere;
-}
 
 .section {
   position: relative;
-  padding: 34px 0 22px;
+  padding: 48px 0 34px;
   scroll-margin-top: 14px;
 }
 
@@ -206,7 +184,7 @@ h2 {
 .body-text {
   max-width: 868px;
   font-size: 1.05rem;
-  margin-bottom: 0.82rem;
+  margin-bottom: 1.05rem;
 }
 
 .compare-grid,
@@ -214,7 +192,7 @@ h2 {
 .boundary-grid,
 .split-grid {
   display: grid;
-  gap: 18px;
+  gap: 24px;
 }
 
 .compare-grid {
@@ -243,7 +221,7 @@ h2 {
 }
 
 .paper-block {
-  padding: 20px;
+  padding: 22px;
 }
 
 .paper-block.large {
@@ -255,7 +233,7 @@ h2 {
 }
 
 .memo-quote {
-  margin: 14px 0;
+  margin: 20px 0;
   padding: 12px 14px;
   border-left: 5px solid var(--red);
   background:
@@ -643,7 +621,7 @@ select {
   }
 
   .section {
-    padding: 28px 0 18px;
+    padding: 38px 0 26px;
   }
 
   .section-number {
@@ -659,17 +637,7 @@ select {
     margin: 10px 0 0;
   }
 
-  .toc {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 5px;
-    padding: 8px 0 12px;
-  }
 
-  .toc a {
-    min-height: 30px;
-    padding: 5px 8px;
-    font-size: 0.78rem;
-  }
 
   .stat {
     width: 100%;
@@ -790,18 +758,7 @@ select {
 }
 
 @media (max-width: 480px) {
-  .toc {
-    grid-template-columns: 1fr;
-    gap: 4px;
-    padding: 6px 0 10px;
-  }
 
-  .toc a {
-    min-height: 26px;
-    padding: 4px 8px;
-    font-size: 0.76rem;
-    line-height: 1.18;
-  }
 
   .split-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

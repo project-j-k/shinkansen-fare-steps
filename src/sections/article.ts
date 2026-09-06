@@ -117,18 +117,6 @@ export const renderArticle = (data: TokaidoData): string => {
   const comparisonItems = [hero, same, cheaper, oneStop];
   const fareHeaders = ["区間", "営業キロ", "乗車券", "自由席特急料金", "自由席合計", "指定席特急料金", "指定席合計", "円/km", "特定"];
   const noTokuteiHeaders = ["区間", "営業キロ", "あいだの駅数", "乗車券", "自由席特急料金", "自由席合計", "指定席特急料金", "指定席合計", "円/km", "同じ料金の最遠区間"];
-  const sections = [
-    ["section-1", `${sectionName(hero)}、${km(hero.km)}で${yen(hero.freeTotal)}`],
-    ["section-2", "特急料金は、乗った距離だけでは決まりません"],
-    ["section-3", "短い区間には割引があります"],
-    ["section-4", "短いほうが高くなる区間があります"],
-    ["section-5", `${year(data.tokuteiRule.basisYear)}年の駅の並びが、いまの料金を決めています`],
-    ["section-6", "東海道新幹線の全区間を比べてみる"],
-    ["checker", "乗る区間を調べてみる"],
-    ["section-8", "同じことが起きている区間"],
-    ["section-9", "在来線なら安い。ただし熱海で乗り継ぎになります"],
-    ["section-10", "出典と注意書き"],
-  ];
   if (!hero.sameFareFarthest) {
     throw new Error("主役区間の同額最遠区間が見つかりません");
   }
@@ -144,10 +132,6 @@ export const renderArticle = (data: TokaidoData): string => {
     </header>
 
     <main>
-      <nav class="toc" aria-label="目次">
-        ${sections.map(([id, label]) => `<a href="#${id}">${label}</a>`).join("")}
-      </nav>
-
       <section id="section-1" class="section lead-section">
         <p class="section-number">1</p>
         <h2><span>${sectionName(hero)}、${km(hero.km)}で${yen(hero.freeTotal)}</span></h2>
