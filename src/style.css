@@ -214,6 +214,8 @@ h2 {
 .split-grid {
   display: grid;
   gap: 20px;
+  /* 傾けたカードや付箋が次の段落に食い込まないよう、回転ぶんの余裕を含めて空ける */
+  margin-bottom: 30px;
 }
 
 .compare-grid {
@@ -223,7 +225,7 @@ h2 {
 
 .note-row {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: stretch;
+  align-items: start;
 }
 
 .boundary-grid {
@@ -282,6 +284,7 @@ h2 {
 }
 
 .sticky {
+  margin: 6px 0;
   padding: 18px 20px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 28%),
@@ -573,7 +576,8 @@ select {
   margin-bottom: 12px;
 }
 
-.sources span {
+/* 出典リスト内の補足だけを対象にする。h2 の span まで巻き込まないよう li に限定する */
+.sources li span {
   display: block;
   color: var(--muted);
   font-size: 0.92rem;
