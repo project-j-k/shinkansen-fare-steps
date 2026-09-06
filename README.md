@@ -1,6 +1,6 @@
-# two-stop-tax — 新幹線は "2駅" から急に高くなる
+# shinkansen-fare-steps — 新幹線は "2駅" から急に高くなる
 
-東海道新幹線の「短距離ほど特急料金が割高になる」構造を解説する静的サイトです。公開先は https://project-j-k.github.io/two-stop-tax/ です。Vite + TypeScript の vanilla 実装で、チャートライブラリや外部フォント、CDN、外部画像は使っていません。
+東海道新幹線の「短距離ほど特急料金が割高になる」構造を解説する静的サイトです。公開先は https://project-j-k.github.io/shinkansen-fare-steps/ です。Vite + TypeScript の vanilla 実装で、チャートライブラリや外部フォント、CDN、外部画像は使っていません。
 
 ## ローカル起動
 
@@ -19,11 +19,11 @@ npm run build
 
 ## GitHub Pages 公開手順
 
-1. GitHub に `two-stop-tax` リポジトリを作成する。
+1. GitHub に `shinkansen-fare-steps` リポジトリを作成する。
 2. ローカルで remote を追加する。
 
 ```bash
-git remote add origin git@github.com:project-j-k/two-stop-tax.git
+git remote add origin git@github.com:project-j-k/shinkansen-fare-steps.git
 git branch -M main
 git push -u origin main
 ```
@@ -33,7 +33,7 @@ git push -u origin main
 
 ## base パス
 
-`vite.config.ts` の既定 base は `/two-stop-tax/` です。リポジトリ名を変える場合は、ビルド時に `VITE_BASE_PATH` を指定してください。
+`vite.config.ts` の既定 base は `/shinkansen-fare-steps/` です。リポジトリ名を変える場合は、ビルド時に `VITE_BASE_PATH` を指定してください。
 
 ```bash
 VITE_BASE_PATH=/another-repo/ npm run build

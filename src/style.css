@@ -298,7 +298,8 @@ h2 {
 }
 
 .hero-note {
-  width: 100%;
+  /* 左端は本文と揃えたまま、注記らしく幅だけ抑える */
+  width: min(660px, 100%);
   margin: 4px 0 0;
   font-weight: 800;
   overflow-wrap: anywhere;
