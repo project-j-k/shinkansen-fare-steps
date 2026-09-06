@@ -33,6 +33,35 @@ const fareLine = (pair: Pair): string => `
     <td>${pair.isTokutei ? "あり" : "なし"}</td>
   </tr>`;
 
+const tableHead = (headers: string[]): string => `<thead><tr>${headers.map((header) => `<th>${header}</th>`).join("")}</tr></thead>`;
+
+const collapsedRowsTable = (headers: string[], rows: string[], visibleCount = 3): string => {
+  const visibleRows = rows.slice(0, visibleCount).join("");
+  const hiddenRows = rows.slice(visibleCount).join("");
+  const hiddenCount = Math.max(rows.length - visibleCount, 0);
+
+  return `
+    <div class="table-wrap">
+      <table>
+        ${tableHead(headers)}
+        <tbody>${visibleRows}</tbody>
+      </table>
+    </div>
+    ${
+      hiddenCount > 0
+        ? `<details class="more-rows">
+            <summary>残り${hiddenCount.toLocaleString("ja-JP")}区間を表示</summary>
+            <div class="table-wrap">
+              <table>
+                ${tableHead(headers)}
+                <tbody>${hiddenRows}</tbody>
+              </table>
+            </div>
+          </details>`
+        : ""
+    }`;
+};
+
 const sameFareCell = (pair: Pair): string => {
   if (!pair.sameFareFarthest) {
     return "この料金帯で最長";
@@ -86,6 +115,20 @@ export const renderArticle = (data: TokaidoData): string => {
   const worst = [...data.pairs].sort((a, b) => b.yenPerKmFree - a.yenPerKmFree).slice(0, 12);
   const worstNoTokutei = data.pairs.filter((pair) => !pair.isTokutei).sort((a, b) => b.yenPerKmFree - a.yenPerKmFree).slice(0, 12);
   const comparisonItems = [hero, same, cheaper, oneStop];
+  const fareHeaders = ["区間", "営業キロ", "乗車券", "自由席特急料金", "自由席合計", "指定席特急料金", "指定席合計", "円/km", "特定"];
+  const noTokuteiHeaders = ["区間", "営業キロ", "あいだの駅数", "乗車券", "自由席特急料金", "自由席合計", "指定席特急料金", "指定席合計", "円/km", "同じ料金の最遠区間"];
+  const sections = [
+    ["section-1", `${sectionName(hero)}、${km(hero.km)}で${yen(hero.freeTotal)}`],
+    ["section-2", "特急料金は、乗った距離だけでは決まりません"],
+    ["section-3", "短い区間には割引があります"],
+    ["section-4", "短いほうが高くなる区間があります"],
+    ["section-5", `${year(data.tokuteiRule.basisYear)}年の駅の並びが、いまの料金を決めています`],
+    ["section-6", "東海道新幹線の全区間を比べてみる"],
+    ["checker", "乗る区間を調べてみる"],
+    ["section-8", "同じことが起きている区間"],
+    ["section-9", "在来線なら安い。ただし熱海で乗り継ぎになります"],
+    ["section-10", "出典と注意書き"],
+  ];
   if (!hero.sameFareFarthest) {
     throw new Error("主役区間の同額最遠区間が見つかりません");
   }
@@ -94,14 +137,18 @@ export const renderArticle = (data: TokaidoData): string => {
     <header class="hero">
       <div class="hero-copy">
         <p class="kicker">東海道新幹線・自由席特急料金の方眼メモ</p>
-        <h1>新幹線は <span>"2駅"</span> から急に高くなる</h1>
+        <h1><span class="title-line">新幹線は <mark>"2駅"</mark> から</span><span class="title-line">急に高くなる</span></h1>
         <p class="subtitle">${sectionName(hero)} ${km(hero.km)} の自由席特急料金は ${yen(hero.freeLtd)}。${sectionName(same)} ${km(same.km)} も、同じ ${yen(same.freeLtd)}。</p>
+        <div class="hero-note sticky">${data.highlights.hero.note}</div>
       </div>
-      <div class="hero-note sticky">${data.highlights.hero.note}</div>
     </header>
 
     <main>
-      <section class="section lead-section">
+      <nav class="toc" aria-label="目次">
+        ${sections.map(([id, label]) => `<a href="#${id}">${label}</a>`).join("")}
+      </nav>
+
+      <section id="section-1" class="section lead-section">
         <p class="section-number">1</p>
         <h2><span>${sectionName(hero)}、${km(hero.km)}で${yen(hero.freeTotal)}</span></h2>
         <div class="compare-grid uneven">
@@ -126,7 +173,7 @@ export const renderArticle = (data: TokaidoData): string => {
         <p class="body-text">乗車券は距離に応じて増えていきますが、特急料金はそう動いていません。この違和感がどこから来るのかを、東海道新幹線の全区間の記録で追っていきます。</p>
       </section>
 
-      <section class="section">
+      <section id="section-2" class="section">
         <p class="section-number">2</p>
         <h2><span>特急料金は、乗った距離だけでは決まりません</span></h2>
         <p class="body-text">新幹線に乗るときの支払いは、大きく分けると乗車券と特急券です。乗車券は普通列車に乗るための基本料金で、営業キロ、つまり運賃計算に使う鉄道上の距離に応じて増えていきます。</p>
@@ -135,7 +182,7 @@ export const renderArticle = (data: TokaidoData): string => {
         ${fareStepChart(data.fareTiers)}
       </section>
 
-      <section class="section">
+      <section id="section-3" class="section">
         <p class="section-number">3</p>
         <h2><span>短い区間には割引があります</span></h2>
         <p class="body-text">JRも短距離の割高感を放置しているわけではありません。隣接する駅どうしの区間には、特定特急券という割安な自由席用の特急券があります。指定席ではなく、自由席に乗るときの短距離向け割引です。</p>
@@ -151,7 +198,7 @@ export const renderArticle = (data: TokaidoData): string => {
         <p class="body-text">分割購入をしても、差は ${yen(splitOdawaraMishima.saving)} だけです。ほぼ得をしないので、この区間には「買い方で逃げる」余地があまりありません。</p>
       </section>
 
-      <section class="section">
+      <section id="section-4" class="section">
         <p class="section-number">4</p>
         <h2><span>短いほうが高くなる区間があります</span></h2>
         <p class="body-text">三島から静岡までは ${km(cheaper.km)} ありますが、自由席特急料金は ${yen(cheaper.freeLtd)} です。小田原から三島までは ${km(hero.km)} しかないのに、自由席特急料金は ${yen(hero.freeLtd)} です。</p>
@@ -160,7 +207,7 @@ export const renderArticle = (data: TokaidoData): string => {
         ${comparisonBarChart(comparisonItems)}
       </section>
 
-      <section class="section">
+      <section id="section-5" class="section">
         <p class="section-number">5</p>
         <h2><span>${year(data.tokuteiRule.basisYear)}年の駅の並びが、いまの料金を決めています</span></h2>
         <p class="body-text">特定特急券の「隣接駅間」は、現在の駅並びだけでは決まりません。東海道・山陽新幹線では、新大阪〜岡山が開業した ${year(data.tokuteiRule.basisYear)}年の駅の並びが、判断の大きな基準になっています。</p>
@@ -177,7 +224,7 @@ export const renderArticle = (data: TokaidoData): string => {
         </ul>
       </section>
 
-      <section class="section">
+      <section id="section-6" class="section">
         <p class="section-number">6</p>
         <h2><span>東海道新幹線の全区間を比べてみる</span></h2>
         <p class="body-text">路線図では、東海道新幹線の駅の並び、開業時期、特定特急券が効く区間をまとめて見られるようにしました。後発駅が間に入っても割引が続く区間と、最初から隣どうしではなかった小田原〜三島の違いが見えてきます。</p>
@@ -185,37 +232,23 @@ export const renderArticle = (data: TokaidoData): string => {
         ${routeChart(data.stations, data.pairs, data.tokuteiRule)}
         <h3 class="subhead">自由席 円/km が高い区間（全区間）</h3>
         <p class="body-text">全区間で見ると、隣接駅間は距離が極端に短いので単価が高く出ます。これは短距離向けの特定特急券が効いていても、分母の営業キロが小さいためです。</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>区間</th><th>営業キロ</th><th>乗車券</th><th>自由席特急料金</th><th>自由席合計</th><th>指定席特急料金</th><th>指定席合計</th><th>円/km</th><th>特定</th></tr></thead>
-            <tbody>${worst.map(fareLine).join("")}</tbody>
-          </table>
-        </div>
+        ${collapsedRowsTable(fareHeaders, worst.map(fareLine))}
         <h3 class="subhead">自由席 円/km が高い区間（特定特急券なし）</h3>
         <p class="body-text">特定特急券が効かない区間だけに絞ると、短距離なのに通常の階段料金へ乗ってしまう区間が浮かびます。この表では ${sectionName(worstNoTokutei[0])} が先頭に来ます。</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>区間</th><th>営業キロ</th><th>乗車券</th><th>自由席特急料金</th><th>自由席合計</th><th>指定席特急料金</th><th>指定席合計</th><th>円/km</th><th>特定</th></tr></thead>
-            <tbody>${worstNoTokutei.map(fareLine).join("")}</tbody>
-          </table>
-        </div>
+        ${collapsedRowsTable(fareHeaders, worstNoTokutei.map(fareLine))}
       </section>
 
       ${renderChecker(data)}
 
-      <section class="section">
+      <section id="section-8" class="section">
         <p class="section-number">8</p>
         <h2><span>同じことが起きている区間</span></h2>
         <p class="body-text">ここで見るのは、特定特急券が効かず、営業キロが ${data.fareTiers[0].label} の中に収まる区間です。さらに、あいだに駅があるほど「短距離なのに隣接駅扱いではない」ことが分かりやすくなります。</p>
         <p class="body-text">一覧には、あいだの駅数も加えました。営業キロだけなら短いのに、特急料金は通常の踊り場に乗ってしまう区間です。</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>区間</th><th>営業キロ</th><th>あいだの駅数</th><th>乗車券</th><th>自由席特急料金</th><th>自由席合計</th><th>指定席特急料金</th><th>指定席合計</th><th>円/km</th><th>同じ料金の最遠区間</th></tr></thead>
-            <tbody>${noTokuteiUnderTier
-              .map((pair) => `<tr><td>${sectionName(pair)}</td><td>${km(pair.km)}</td><td>${pair.stationsBetween.toLocaleString("ja-JP")}</td><td>${yen(pair.fare)}</td><td>${yen(pair.freeLtd)}</td><td>${yen(pair.freeTotal)}</td><td>${yen(pair.reservedLtd)}</td><td>${yen(pair.reservedTotal)}</td><td>${perKm(pair.yenPerKmFree)}</td><td>${sameFareCell(pair)}</td></tr>`)
-              .join("")}</tbody>
-          </table>
-        </div>
+        ${collapsedRowsTable(
+          noTokuteiHeaders,
+          noTokuteiUnderTier.map((pair) => `<tr><td>${sectionName(pair)}</td><td>${km(pair.km)}</td><td>${pair.stationsBetween.toLocaleString("ja-JP")}</td><td>${yen(pair.fare)}</td><td>${yen(pair.freeLtd)}</td><td>${yen(pair.freeTotal)}</td><td>${yen(pair.reservedLtd)}</td><td>${yen(pair.reservedTotal)}</td><td>${perKm(pair.yenPerKmFree)}</td><td>${sameFareCell(pair)}</td></tr>`),
+        )}
         <p class="body-text">分割購入は、区間によって効き方がかなり違います。${splitGifuKyoto.from}〜${splitGifuKyoto.to} は ${yen(splitGifuKyoto.saving)} も安くなりますが、${splitOdawaraMishima.from}〜${splitOdawaraMishima.to} は ${yen(splitOdawaraMishima.saving)} しか変わりません。</p>
         <p class="body-text">理由は単純です。小田原〜三島は通しで買っても、すでに最初の踊り場である ${yen(data.fareTiers[0].freeLtd)} どまりです。そこから分割しても、下げ幅がほとんど残っていません。</p>
         <div class="split-grid">
@@ -231,7 +264,7 @@ export const renderArticle = (data: TokaidoData): string => {
         </div>
       </section>
 
-      <section class="section">
+      <section id="section-9" class="section">
         <p class="section-number">9</p>
         <h2><span>在来線なら安い。ただし熱海で乗り継ぎになります</span></h2>
         <p class="body-text">在来線を選ぶと、特急料金はかかりません。小田原〜三島なら、乗車券は ${yen(hero.fare)} です。新幹線の自由席に乗ると合計は ${yen(hero.freeTotal)} なので、乗車券だけの場合の ${ratio(hero.freeMultipleOfFare)} になります。</p>
@@ -247,16 +280,19 @@ export const renderArticle = (data: TokaidoData): string => {
         ${keyPoint("新幹線側はどうか", data.conventionalLine.boundary.shinkansenNote)}
       </section>
 
-      <section class="section sources">
+      <section id="section-10" class="section sources">
         <p class="section-number">10</p>
         <h2><span>出典と注意書き</span></h2>
         <p class="body-text">料金、営業キロ、特定特急券の扱いは、JR東海の旅客営業規則とその別表、および同社の案内ページを根拠にしています。指定席特急料金は別表第2号ツの実額を使い、距離帯から見た扱いとも照合しています。</p>
         <p class="body-text">指定席料金は時期や列車種別で変わる場合があります。このページでは、通常期の「ひかり・こだま」と自由席を中心に見ています。</p>
-        <ol>
-          ${data.sources
-            .map((source) => `<li><a href="${escapeHtml(source.url)}" rel="noreferrer">${escapeHtml(source.title)}</a><span>${escapeHtml(source.publisher)} / ${escapeHtml(readerFacingUse(source.used))}</span></li>`)
-            .join("")}
-        </ol>
+        <details class="source-details">
+          <summary>出典 ${data.sources.length.toLocaleString("ja-JP")}件（JR東海 旅客営業規則ほか）</summary>
+          <ol>
+            ${data.sources
+              .map((source) => `<li><a href="${escapeHtml(source.url)}" rel="noreferrer">${escapeHtml(source.title)}</a><span>${escapeHtml(source.publisher)} / ${escapeHtml(readerFacingUse(source.used))}</span></li>`)
+              .join("")}
+          </ol>
+        </details>
         <div class="paper-block">
           <p>${data.meta.fareBasis}</p>
           <p>${readerFacingUse(data.meta.reservedSource)}</p>
